@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Router from "./routes/Router";
+import "./index.css";
 
 // โค้ดที่ต้องเพิ่มเพื่อแก้ไข Runtime Error
 import { library } from '@fortawesome/fontawesome-svg-core';
