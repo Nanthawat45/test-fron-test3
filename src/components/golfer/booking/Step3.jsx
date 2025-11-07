@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from "react"; // นำเข้า React hooks ที่ใช้ state/effect/memo/ref
 import LoadingAnimation from "../../golfer/animations/LoadingAnimation"; // คอมโพเนนต์แสดงโหลดดิ้ง
-import CaddyService from "../../../service/caddyService"; // service ดึงรายชื่อแคดดี้
+import CaddyService from "../../../service/CaddyService"; // service ดึงรายชื่อแคดดี้
 
 /* ---------- helpers ---------- */
 const HOLD_KEY = (d, t, ct) => `caddy-holds:${d || "none"}:${t || "none"}:${ct || "none"}`; // ฟังก์ชันสร้างคีย์สำหรับ sessionStorage โดยผูกกับ date/timeSlot/courseType

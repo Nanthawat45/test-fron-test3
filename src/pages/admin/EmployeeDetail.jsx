@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Input } from "@/components/ui/input";
+import { Input } from "../../components/ui/input.jsx";
 import UserService from "../../service/userService.js";
 
 export default function EmployeeDetail() {
