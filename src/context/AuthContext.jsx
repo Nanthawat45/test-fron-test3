@@ -1,19 +1,20 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
-import UserService from "../service/userService";
+import UserService from "../service/userService"; // ชื่อไฟล์/ตัวพิมพ์ต้องตรงกับจริง ๆ
 
-// ----- Context + Hook -----
 export const AuthContext = createContext(null);
 export const useAuthContext = () => useContext(AuthContext);
 
-// ----- Provider -----
-function AuthProvider({ children }) {   // ⬅️ ไม่ export ที่นี่
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const refreshProfile = useCallback(async () => {
     try {
       const res = await UserService.getUserProfile();
-      setUser(res?.data ?? null);
+      // ✅ รองรับทั้ง { user: {...} } และ {...} ตรง ๆ
+      const me = res?.data?.user ?? res?.data ?? null;
+      setUser(me);
     } catch {
       setUser(null);
     } finally {
@@ -24,9 +25,12 @@ function AuthProvider({ children }) {   // ⬅️ ไม่ export ที่น�
   useEffect(() => { refreshProfile(); }, [refreshProfile]);
 
   const login = useCallback(async (payload) => {
-    await UserService.loginUser(payload);
-    await refreshProfile();
-  }, [refreshProfile]);
+    await UserService.loginUser(payload);   // เซ็ตคุกกี้เสร็จ
+    const res = await UserService.getUserProfile();  // ดึงโปรไฟล์
+    const me = res?.data?.user ?? res?.data ?? null;
+    setUser(me);
+    return me;  // ✅ คืน user ให้ผู้เรียก (StaffLoginPage ใช้ต่อได้)
+  }, []);
 
   const logout = useCallback(async () => {
     try { await UserService.logoutUser(); } finally { setUser(null); }
@@ -39,5 +43,4 @@ function AuthProvider({ children }) {   // ⬅️ ไม่ export ที่น�
   );
 }
 
-export default AuthProvider;   
-export { AuthProvider };      
+export default AuthProvider;

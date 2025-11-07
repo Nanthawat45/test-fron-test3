@@ -53,11 +53,7 @@ export default function StaffLoginPage() {
     setNotif({ type: "", message: "" });
 
     try {
-      const res = await login({
-        email: formData.email,
-        password: formData.password,
-      });
-      const user = res?.user || res;
+      const user = await login({ email: formData.email, password: formData.password });
 
       // อนุญาตเฉพาะ staff
       if (!isStaffRole(user?.role)) {
