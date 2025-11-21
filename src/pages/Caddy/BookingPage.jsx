@@ -3,8 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import th from "date-fns/locale/th";
-import CaddyService from "../../service/CaddyService";
-import UserService from "../../service/userService";
+import CaddyService from "../../service/caddyService";
+import { useAuthContext } from "../../context/AuthContext";
 
 registerLocale("th", th);
 
@@ -31,6 +31,7 @@ const toLocalDate = (isoStr) => {
 const BookingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuthContext();
   const profileRef = useRef(null);
 
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -167,16 +168,7 @@ const handleMenuClick = async (menu) => {
   } else if (menu === "แจ้งปัญหา") {
     navigate("/caddy/dashboard");
   } else if (menu === "ออกจากระบบ") {
-    try {
-      await UserService.logoutUser();
-    } catch (err) {
-      console.warn("Logout error:", err);
-    }
-
-    // ✅ หน่วงเวลา 1 วินาทีก่อนรีเฟรช
-          localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.replace("/"); // <-- แก้เป็น 1500, 2000 ก็ได้ถ้าอยากหน่วงมากกว่านี้
+    await logout(); // ให้ context จัดการทุกอย่าง // ใช้ logout จาก context
   }
 
   setIsMenuOpen(false);

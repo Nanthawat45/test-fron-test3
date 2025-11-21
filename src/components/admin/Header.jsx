@@ -1,10 +1,11 @@
 import { HiClipboardList, HiUserAdd, HiUserGroup } from "react-icons/hi";
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import UserService from "../../service/userService";
+import { useAuthContext } from "../../context/AuthContext";
 
 export default function HeaderCaddy({ activePage }) {
   const navigate = useNavigate();
+  const { logout } = useAuthContext(); // ดึง logout จาก context
   const profileRef = useRef(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -41,15 +42,8 @@ export default function HeaderCaddy({ activePage }) {
     else if (menu === "ประวัติการทำงาน") navigate("/caddy/history");
     else if (menu === "แจ้งปัญหา") navigate("/caddy/dashboard");
     else if (menu === "ออกจากระบบ") {
-      try {
-        await UserService.logoutUser();
-      } catch (err) {
-        console.warn("Logout error:", err);
-      }
-
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.replace("/");
+      await logout(); // // ให้ context จัดการทุกอย่าง
+  
     }
 
     setIsMenuOpen(false);
@@ -76,24 +70,7 @@ export default function HeaderCaddy({ activePage }) {
 
         {isMenuOpen && (
           <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 text-gray-700 z-50">
-            <button
-              onClick={() => handleMenuClick("โปรไฟล์")}
-              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-            >
-              โปรไฟล์
-            </button>
-            <button
-              onClick={() => handleMenuClick("ประวัติการทำงาน")}
-              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-            >
-              ประวัติการทำงาน
-            </button>
-            <button
-              onClick={() => handleMenuClick("แจ้งปัญหา")}
-              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-            >
-              แจ้งปัญหา
-            </button>
+
             <button
               onClick={() => handleMenuClick("ออกจากระบบ")}
               className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-500"

@@ -3,11 +3,17 @@ import Header from "../../components/Caddy/Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useLocation } from "react-router-dom";
-import CaddyService from "../../service/CaddyService"; // ✅ ใช้ Service ที่ล็อกไว้แล้ว
+import CaddyService from "../../service/caddyService";
 
 const ProcessGolfPage = () => {
   const [step, setStep] = useState(1);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  // popup step 1
+  const [showStartConfirm, setShowStartConfirm] = useState(false);
+  // popup step 2 และ 3
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
+  const [showBatteryConfirm, setShowBatteryConfirm] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -95,8 +101,8 @@ const ProcessGolfPage = () => {
         step === 1
           ? "เริ่มออกรอบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"
           : step === 2
-          ? "จบการเล่นไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"
-          : "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
+            ? "จบการเล่นไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"
+            : "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
       );
     } finally {
       setWorking(false);
@@ -122,13 +128,12 @@ const ProcessGolfPage = () => {
           {[1, 2, 3].map((i) => (
             <React.Fragment key={i}>
               <div
-                className={`w-9 h-9 flex items-center justify-center rounded-full border-2 transition-all duration-300 ${
-                  step > i
+                className={`w-9 h-9 flex items-center justify-center rounded-full border-2 transition-all duration-300 ${step > i
                     ? "bg-green-500 border-green-500 text-white"
                     : step === i
-                    ? "bg-green-100 border-green-500 text-green-700"
-                    : "bg-gray-100 border-gray-300 text-gray-400"
-                }`}
+                      ? "bg-green-100 border-green-500 text-green-700"
+                      : "bg-gray-100 border-gray-300 text-gray-400"
+                  }`}
               >
                 {step > i ? <FontAwesomeIcon icon={faCheckCircle} /> : i}
               </div>
@@ -146,10 +151,18 @@ const ProcessGolfPage = () => {
         <div className="bg-gradient-to-br from-green-700 to-green-800 text-white rounded-3xl w-full max-w-sm py-8 px-6 text-center shadow-lg">
           <p className="text-lg font-semibold">{stepTexts[step - 1]}</p>
           <button
-            className={`mt-6 bg-white text-green-800 font-medium text-sm px-8 py-2 rounded-full shadow-md hover:bg-green-50 transition ${
-              working ? "opacity-70 cursor-not-allowed" : ""
-            }`}
-            onClick={handleNextStep}
+            className={`mt-6 bg-white text-green-800 font-medium text-sm px-8 py-2 rounded-full shadow-md hover:bg-green-50 transition ${working ? "opacity-70 cursor-not-allowed" : ""
+              }`}
+            onClick={() => {
+              if (working) return;
+              if (step === 1) {
+                setShowStartConfirm(true);
+              } else if (step === 2) {
+                setShowEndConfirm(true);
+              } else if (step === 3) {
+                setShowBatteryConfirm(true);
+              }
+            }}
             disabled={working}
           >
             {working ? "กำลังดำเนินการ..." : "ยืนยัน"}
@@ -165,6 +178,84 @@ const ProcessGolfPage = () => {
           ยกเลิก
         </button>
       </div>
+
+      {showStartConfirm && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-6 pb-16">
+          <div className="bg-white p-6 rounded-3xl shadow-md text-center w-full max-w-xs">
+            <p className="text-lg font-semibold mb-4">คุณยืนยันจะเริ่มรอบใช่หรือไม่?</p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => setShowStartConfirm(false)}
+                className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
+              >
+                ไม่
+              </button>
+              <button
+                onClick={async () => {
+                  setShowStartConfirm(false);
+                  await handleNextStep();
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded"
+              >
+                ใช่
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {showEndConfirm && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-6 pb-16">
+          <div className="bg-white p-6 rounded-3xl shadow-md text-center w-full max-w-xs">
+            <p className="text-lg font-semibold mb-4">คุณต้องการจบการเล่นกอล์ฟใช่หรือไม่?</p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => setShowEndConfirm(false)}
+                className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
+              >
+                ไม่
+              </button>
+              <button
+                onClick={async () => {
+                  setShowEndConfirm(false);
+                  await handleNextStep();
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded"
+              >
+                ใช่
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {/* ✅ ป๊อพอัพยืนยันเปลี่ยนแบตสำเร็จ (Step 3) */}
+      {showBatteryConfirm && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-6 pb-16">
+          <div className="bg-white p-6 rounded-3xl shadow-md text-center w-full max-w-xs">
+            <p className="text-lg font-semibold mb-4">ยืนยันว่าเปลี่ยนแบตรถกอล์ฟสำเร็จ?</p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => setShowBatteryConfirm(false)}
+                className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded"
+              >
+                ไม่
+              </button>
+              <button
+                onClick={async () => {
+                  setShowBatteryConfirm(false);
+                  await handleNextStep();
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded"
+              >
+                ใช่
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showCancelConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">

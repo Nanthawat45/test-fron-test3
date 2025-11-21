@@ -42,6 +42,9 @@ function RequireRole({ allowed = [], children }) {
   const { user } = useAuthContext();
   const location = useLocation();
 
+  //   if (loading) {
+  //   return <div>กำลังตรวจสอบสิทธิ์...</div>;
+  // }
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location.pathname, reason: "auth" }} />;
   }

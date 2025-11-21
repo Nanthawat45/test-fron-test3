@@ -84,8 +84,7 @@ const Dashboard = () => {
         await api.put(`/hole/open`, { holeNumber: Number(holeNumber) });
       } else if (title === "ขอรถกอล์ฟช่วย") {
         await api.put(`/hole/help-car`, { holeNumber: Number(holeNumber), description: description || "" });
-      } else if (title === "สลับรถกอล์ฟให้กลุ่มนี้") {
-        await api.put(`/hole/go-car`, { holeNumber: Number(holeNumber) });
+
       }
       await fetchHoleStatuses();
       setPopup({ title: "ดำเนินการสำเร็จ", isError: false });
@@ -243,7 +242,6 @@ const Dashboard = () => {
             {/* ❌ ลบการ์ด 'แจ้งสถานะกำลังแก้ไข' ออก */}
             <HoleCard title="แจ้งเปิดใช้งานหลุม" color="green" showName={false} showIssue={false} ask={askHoleAction} />
             <HoleCard title="ขอรถกอล์ฟช่วย" color="orange" showName={true} showIssue={false} ask={askHoleAction} />
-            <HoleCard title="สลับรถกอล์ฟให้กลุ่มนี้" color="yellow"  showIssue={false} ask={askHoleAction} />
           </div>
         </div>
       </section>

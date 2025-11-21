@@ -1,6 +1,6 @@
 import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input.jsx";
-import { Label } from "../../components/ui/label";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label"
 import { useState, useRef } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import UserService from "../../service/userService";
@@ -81,13 +81,11 @@ export default function EmployeeForm() {
       // เรียก backend
       const response = await UserService.adminRegisterUser(data);
 
-      console.log("Response from server:", response.data);
       const createdUser = response?.data; 
 
       if (createdUser && createdUser._id) {
         if (handleAddEmployee) {
             handleAddEmployee(createdUser);
-            console.log("พนักงานใหม่ถูกเพิ่มใน State แล้ว:", createdUser.name);
         }
 
         setSuccess("เพิ่มข้อมูลสำเร็จ ✅");
@@ -95,18 +93,18 @@ export default function EmployeeForm() {
         // redirect หลัง 1 วินาที
         setTimeout(() => navigate("/admin"), 1000);
       } else {
-        setError(response?.data?.message || "เกิดข้อผิดพลาด: Server ไม่ได้ส่งข้อมูลผู้ใช้กลับมาที่คาดหวัง");
+        setError(response?.data?.message || "Server ไม่ได้ส่งข้อมูลผู้ใช้กลับมา");
       }
     } catch (err) {
       console.error(err);
       
       // จัดการข้อผิดพลาดจาก Axios
       const serverMessage = err.response?.data?.message || err.response?.data?.error;
-      const displayError = serverMessage 
-        ? "ข้อผิดพลาดจากเซิร์ฟเวอร์: " + serverMessage 
-        : "เกิดข้อผิดพลาดในการเชื่อมต่อ: " + err.message;
-
-      setError(displayError);
+      setError(
+        serverMessage
+          ? "ข้อผิดพลาดจากเซิร์ฟเวอร์: " + serverMessage
+          : "เกิดข้อผิดพลาด: " + err.message
+      );
     } finally {
       setLoading(false);
     }
