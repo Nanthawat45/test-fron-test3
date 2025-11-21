@@ -3,7 +3,7 @@ import Header from "../../components/Caddy/Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useLocation } from "react-router-dom";
-import CaddyService from "../../service/caddyService";
+import CaddyService from "../../service/CaddyService";
 
 const ProcessGolfPage = () => {
   const [step, setStep] = useState(1);

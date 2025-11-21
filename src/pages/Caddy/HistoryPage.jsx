@@ -9,7 +9,7 @@ import {
   faChevronDown,
   faSearch,
 } from "@fortawesome/free-solid-svg-icons";
-import CaddyService from "../../service/caddyService";
+import CaddyService from "../../service/CaddyService";
 
 const toThaiDate = (iso) => {
   try {
